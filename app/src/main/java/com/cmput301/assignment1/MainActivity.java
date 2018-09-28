@@ -21,11 +21,6 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mSadEmoji;
     private List<ImageView> emojis = new ArrayList<>();
 
-    private RecyclerView mLogsView;
-    private RecyclerView.Adapter mLogsAdapter;
-    private RecyclerView.LayoutManager mLogsManager;
-    private List<View> logs = new ArrayList<>();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,12 +39,6 @@ public class MainActivity extends AppCompatActivity {
         emojis.add(mSurpriseEmoji);
         emojis.add(mJoyEmoji);
         emojis.add(mSadEmoji);
-
-        mLogsView = findViewById(R.id.recyclerView);
-        mLogsManager = new LinearLayoutManager(this);
-        mLogsView.setLayoutManager(mLogsManager);
-        mLogsAdapter = new LogsAdapter(this, logs);
-        mLogsView.setAdapter(mLogsAdapter);
 
         for (ImageView emoji: emojis){
             emoji.setOnClickListener(new View.OnClickListener() {
