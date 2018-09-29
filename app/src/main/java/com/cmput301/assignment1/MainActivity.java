@@ -3,7 +3,6 @@ package com.cmput301.assignment1;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -13,7 +12,7 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
     private ArrayList<Log> logs = new ArrayList<>();
-    private ArrayAdapter<Log> adapter;
+    private LogsAdapter adapter;
     private ListView logsView;
 
     private ImageView mLoveEmoji;
@@ -72,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         // Connect the log array with the logs view
-        adapter = new ArrayAdapter<>(this, R.layout.log, logs);
+        adapter = new LogsAdapter(this, R.layout.log, logs);
         logsView.setAdapter(adapter);
     }
 }
