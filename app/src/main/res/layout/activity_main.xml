@@ -87,6 +87,7 @@
     </LinearLayout>
 
     <ListView
+        android:id="@+id/logsListView"
         android:layout_width="368dp"
         android:layout_height="376dp"
         android:layout_marginBottom="8dp"

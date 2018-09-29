@@ -7,9 +7,11 @@ public class Anger extends Emotion {
     private static final String name = "anger";
     private static Integer counter = 0;
     private Integer emoji_reference;
+    private Integer spawner_reference;
 
     public Anger(){
         this.emoji_reference = R.drawable.anger;
+        this.spawner_reference =  R.id.angerView;
         Anger.counter++;
     }
 
@@ -21,5 +23,10 @@ public class Anger extends Emotion {
     @Override
     public Integer getCount() {
         return Anger.counter;
+    }
+
+    @Override
+    public Integer getSpawnerReference() {
+        return this.spawner_reference;
     }
 }
