@@ -1,12 +1,9 @@
-/*
-* Main prompt activity that allows user to quickly add log
-* */
-
 package com.cmput301.assignment1;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -22,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private ImageView mJoyEmoji;
     private ImageView mSadEmoji;
     private List<ImageView> emojis = new ArrayList<>();
+    private ArrayAdapter<Log> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
