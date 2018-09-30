@@ -1,5 +1,10 @@
+/* Adapter implementation modified from Joshua Charles Campbell's work at
+* [https://github.com/joshua2ua/lonelyTwitter]
+* */
+
 package com.cmput301.assignment1;
 
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -51,17 +56,27 @@ public class MainActivity extends AppCompatActivity {
             emoji.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v){
+
+                    // fetch comment from textbox
+                    TextInputEditText textbox = findViewById(R.id.textboxView);
+                    String comment = textbox.getText().toString();
+
+                    // clear it
+                    textbox.setText("");
+
                     // for each emoji, manually determine associated Emotion
                     //      then create Log instance with that Emotion
                     switch(emoji.getId()){
-                        case R.id.loveView: logs.add(new Log("love", new Date(), "")); break;
-                        case R.id.fearView: logs.add(new Log("fear", new Date(), "")); break;
-                        case R.id.angerView: logs.add(new Log("anger", new Date(), "")); break;
-                        case R.id.surpriseView: logs.add(new Log("surprise", new Date(), "")); break;
-                        case R.id.joyView: logs.add(new Log("joy", new Date(), "")); break;
-                        case R.id.sadView: logs.add(new Log("sadness", new Date(), "")); break;
+                        case R.id.loveView: logs.add(new Log("love", new Date(), comment)); break;
+                        case R.id.fearView: logs.add(new Log("fear", new Date(), comment)); break;
+                        case R.id.angerView: logs.add(new Log("anger", new Date(), comment)); break;
+                        case R.id.surpriseView: logs.add(new Log("surprise", new Date(), comment)); break;
+                        case R.id.joyView: logs.add(new Log("joy", new Date(), comment)); break;
+                        case R.id.sadView: logs.add(new Log("sadness", new Date(), comment)); break;
                     }
+
                     adapter.notifyDataSetChanged();
+
                 }
             });
         }

@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">asl2_FeelsBook</string>
-
     <string name="main_prompt">How are you feeling?</string>
+    <string name="comment_prompt">Optional comment (max 100 characters)</string>
 </resources>
