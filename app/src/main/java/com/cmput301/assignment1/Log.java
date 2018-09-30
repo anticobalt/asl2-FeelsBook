@@ -10,6 +10,7 @@ import com.cmput301.assignment1.emotion.Love;
 import com.cmput301.assignment1.emotion.Sadness;
 import com.cmput301.assignment1.emotion.Surprise;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Log implements Comparable<Log>{
@@ -57,5 +58,13 @@ public class Log implements Comparable<Log>{
         } else {
             return 0;
         }
+    }
+
+    public String getDateAsString() {
+        /* Returns date formatted in ISO 8601
+        Modified from Joachim Sauer's answer on https://stackoverflow.com/a/3914498
+        */
+        SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        return date_format.format(this.date);
     }
 }
