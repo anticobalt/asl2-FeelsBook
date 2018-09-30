@@ -14,12 +14,20 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Log implements Comparable<Log>{
+    /* Logs have unique ID to allow for identification across activities,
+    *       as they themselves cannot be passed through Intents.
+    * */
 
+    private static Integer runningID = 0;
+    private Integer id;
     private Emotion emotion;
     private Date date;
     private String comment;
+    private String emotionName;
 
     public Log(String emotion_name, Date date, String comment){
+
+        this.id = ++runningID;
 
         switch (emotion_name){
             case "anger": this.emotion = new Anger(); break;
@@ -33,6 +41,10 @@ public class Log implements Comparable<Log>{
         this.date = date;
         this.comment = comment;
 
+    }
+
+    public Integer getId() {
+        return this.id;
     }
 
     public Date getDate(){
@@ -66,5 +78,9 @@ public class Log implements Comparable<Log>{
         */
         SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         return date_format.format(this.date);
+    }
+
+    public String getEmotionName() {
+        return this.emotionName;
     }
 }

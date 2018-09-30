@@ -4,10 +4,12 @@
 
 package com.cmput301.assignment1;
 
+import android.content.Intent;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
@@ -64,8 +66,9 @@ public class MainActivity extends AppCompatActivity {
                     // clear it
                     textbox.setText("");
 
-                    // for each emoji, manually determine associated Emotion
-                    //      then create Log instance with that Emotion
+                    // For each emoji, manually determine associated Emotion
+                    //      then create Log instance with that Emotion.
+                    // Doing it this way avoids having to create unique listener for every emoji
                     switch(emoji.getId()){
                         case R.id.loveView: logs.add(new Log("love", new Date(), comment)); break;
                         case R.id.fearView: logs.add(new Log("fear", new Date(), comment)); break;
@@ -85,8 +88,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
         // Connect the log array with the logs view
         adapter = new LogsAdapter(this, R.layout.log, logs);
         logsView.setAdapter(adapter);
+
+        // Set click listener, then transfer Log data from MainActivity to EditActivity
+        //      via an Intent.
+        // See https://developer.android.com/reference/android/widget/AdapterView.OnItemClickListener
+        //      and user914425's answer on https://stackoverflow.com/a/7325248
+        logsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log log = (Log) parent.getItemAtPosition(position);
+                Intent intent = new Intent(MainActivity.this, EditActivity.class);
+
+                // Intents can only be packaged with standard-typed variables,
+                //      so Logs will have to be dissected, then passed to activity
+                intent.putExtra("id", log.getId());
+                intent.putExtra("emotion_name", log.getEmotionName());
+                intent.putExtra("date_string", log.getDateAsString());
+                intent.putExtra("comment", log.getComment());
+                startActivity(intent);
+            }
+        });
+
     }
 }
