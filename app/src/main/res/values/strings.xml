@@ -2,4 +2,9 @@
     <string name="app_name">asl2_FeelsBook</string>
     <string name="main_prompt">How are you feeling?</string>
     <string name="comment_prompt">Optional comment (max 100 characters)</string>
+    <string name="date_prompt">Date:</string>
+    <string name="time_prompt">Time:</string>
+    <string name="delete">Delete</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

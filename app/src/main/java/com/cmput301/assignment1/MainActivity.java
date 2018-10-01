@@ -113,7 +113,6 @@ public class MainActivity extends AppCompatActivity {
                 // Intents can only be packaged with standard-typed variables,
                 //      so Logs will have to be dissected, then passed to activity
                 intent.putExtra("id", log.getId());
-                intent.putExtra("emotion_name", log.getEmotionName());
                 intent.putExtra("date_string", log.getDateAsString());
                 intent.putExtra("comment", log.getComment());
                 startActivity(intent);
