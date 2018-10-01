@@ -13,6 +13,18 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -22,11 +34,15 @@ public class MainActivity extends AppCompatActivity {
     private LogsAdapter adapter;
     private ListView logsView;
     private ArrayList<ImageView> emojis = new ArrayList<>();
+    private final String SAVEDATA = "data.sav";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Get user data, if it exists
+        loadFileData();
 
         // Get the ListView that holds logs
         logsView = findViewById(R.id.logsListView);
@@ -50,6 +66,36 @@ public class MainActivity extends AppCompatActivity {
 
         // Set click listener for logsView
         setLogsListener(logsView);
+
+    }
+
+    private void loadFileData() {
+    /* Try to open save file and bind it's contents to Log ArrayList */
+
+        try {
+
+            // Read file
+            FileInputStream fis = openFileInput(SAVEDATA);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader reader = new BufferedReader(isr);
+            Gson gson = new Gson();
+            Type LiteLogList = new TypeToken<ArrayList<LiteLog>>(){}.getType();
+            ArrayList<LiteLog> liteLogs = gson.fromJson(reader, LiteLogList);
+
+            // Dissect the liteLogs and create new Logs out of them
+            for (LiteLog liteLog: liteLogs){
+                Date d = liteLog.date;
+                String e = liteLog.emotionName;
+                String c = liteLog.comment;
+                Log actualLog = new Log(e, d, c);
+                logs.add(actualLog);
+            }
+
+        } catch (FileNotFoundException e){
+            // if user has nothing already saved, or something else goes wrong
+            logs = new ArrayList<>();
+            e.printStackTrace();
+        }
 
     }
 
@@ -102,9 +148,39 @@ public class MainActivity extends AppCompatActivity {
 
                 adapter.notifyDataSetChanged();
 
+                // save changes
+                saveFileData();
+
             }
         });
     }
 
+    private void saveFileData() {
 
+        try {
+
+            // Prep work
+            FileOutputStream fos = openFileOutput(SAVEDATA, 0);
+            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            BufferedWriter writer = new BufferedWriter(osw);
+            Gson gson = new Gson();
+
+            // Create array of LiteLogs to allow for serialization
+            ArrayList<LiteLog> liteLogs = new ArrayList<>();
+            for (Log log: logs){
+                LiteLog litelog = new LiteLog(log.getDate(), log.getComment(), log.getEmotionName());
+                liteLogs.add(litelog);
+            }
+
+            // convert to Json and write
+            gson.toJson(liteLogs, writer);
+            writer.flush();
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

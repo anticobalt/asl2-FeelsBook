@@ -25,11 +25,11 @@ public class Log implements Comparable<Log>{
     private String comment;
     private String emotionName;
 
-    public Log(String emotion_name, Date date, String comment){
+    public Log(String emotionName, Date date, String comment){
 
         this.id = ++runningID;
 
-        switch (emotion_name){
+        switch (emotionName){
             case "anger": this.emotion = new Anger(); break;
             case "fear": this.emotion = new Fear(); break;
             case "joy": this.emotion = new Joy(); break;
@@ -40,7 +40,12 @@ public class Log implements Comparable<Log>{
 
         this.date = date;
         this.comment = comment;
+        this.emotionName = emotionName;
 
+    }
+
+    public static Integer getRunningID(){
+        return Log.runningID;
     }
 
     public Integer getId() {
@@ -82,5 +87,23 @@ public class Log implements Comparable<Log>{
 
     public String getEmotionName() {
         return this.emotionName;
+    }
+
+}
+
+class LiteLog {
+    // A subclass that avoids abstract class Emotion,
+    //      allowing for serialization via Gson.
+    // Class is basically just a data container and sort of a one-trick pony
+    //      so making getters/setters seems like overkill
+
+    public Date date;
+    public String comment;
+    public String emotionName;
+
+    LiteLog(Date date, String comment, String emotionName){
+        this.comment = comment;
+        this.date = date;
+        this.emotionName = emotionName;
     }
 }
