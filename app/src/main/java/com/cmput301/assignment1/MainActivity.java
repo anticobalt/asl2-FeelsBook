@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Dissect the liteLogs and create new Logs out of them
             for (LiteLog liteLog: liteLogs){
-                Date d = liteLog.date;
+                Date d = liteLog.datetime;
                 String e = liteLog.emotionName;
                 String c = liteLog.comment;
                 Log actualLog = new Log(e, d, c);
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 // Intents can only be packaged with standard-typed variables,
                 //      so Logs will have to be dissected, then passed to activity
                 intent.putExtra("id", log.getId());
-                intent.putExtra("date_string", log.getDateAsString());
+                intent.putExtra("datetime_string", log.getDateTimeAsString());
                 intent.putExtra("comment", log.getComment());
                 startActivity(intent);
             }
@@ -134,15 +134,15 @@ public class MainActivity extends AppCompatActivity {
                 textbox.setText("");
 
                 // For each emoji, manually determine associated Emotion
-                //      then create Log instance with that Emotion.
+                //      then create Log instance with that Emotion. Logs are prepended.
                 // Doing it this way avoids having to create unique listener for every emoji
                 switch(emoji.getId()){
-                    case R.id.loveView: logs.add(new Log("love", new Date(), comment)); break;
-                    case R.id.fearView: logs.add(new Log("fear", new Date(), comment)); break;
-                    case R.id.angerView: logs.add(new Log("anger", new Date(), comment)); break;
-                    case R.id.surpriseView: logs.add(new Log("surprise", new Date(), comment)); break;
-                    case R.id.joyView: logs.add(new Log("joy", new Date(), comment)); break;
-                    case R.id.sadView: logs.add(new Log("sadness", new Date(), comment)); break;
+                    case R.id.loveView: logs.add(0, new Log("love", new Date(), comment)); break;
+                    case R.id.fearView: logs.add(0, new Log("fear", new Date(), comment)); break;
+                    case R.id.angerView: logs.add(0, new Log("anger", new Date(), comment)); break;
+                    case R.id.surpriseView: logs.add(0, new Log("surprise", new Date(), comment)); break;
+                    case R.id.joyView: logs.add(0, new Log("joy", new Date(), comment)); break;
+                    case R.id.sadView: logs.add(0, new Log("sadness", new Date(), comment)); break;
                 }
 
                 adapter.notifyDataSetChanged();
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
             // Create array of LiteLogs to allow for serialization
             ArrayList<LiteLog> liteLogs = new ArrayList<>();
             for (Log log: logs){
-                LiteLog litelog = new LiteLog(log.getDate(), log.getComment(), log.getEmotionName());
+                LiteLog litelog = new LiteLog(log.getDatetime(), log.getComment(), log.getEmotionName());
                 liteLogs.add(litelog);
             }
 

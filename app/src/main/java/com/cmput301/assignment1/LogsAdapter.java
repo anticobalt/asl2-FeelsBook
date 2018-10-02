@@ -50,7 +50,7 @@ public class LogsAdapter extends ArrayAdapter<Log> {
         }
 
         // Set message and emoji
-        holder.message.setText(rowItem.getDateAsString());
+        holder.message.setText(rowItem.getDateTimeAsString());
         holder.emoji.setImageResource(rowItem.getEmojiReference());
 
         return convertView;

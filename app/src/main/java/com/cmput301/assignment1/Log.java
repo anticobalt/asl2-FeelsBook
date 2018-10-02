@@ -21,11 +21,11 @@ public class Log implements Comparable<Log>{
     private static Integer runningID = 0;
     private Integer id;
     private Emotion emotion;
-    private Date date;
+    private Date datetime;
     private String comment;
     private String emotionName;
 
-    public Log(String emotionName, Date date, String comment){
+    public Log(String emotionName, Date datetime, String comment){
 
         this.id = ++runningID;
 
@@ -38,7 +38,7 @@ public class Log implements Comparable<Log>{
             case "surprise": this.emotion = new Surprise(); break;
         }
 
-        this.date = date;
+        this.datetime = datetime;
         this.comment = comment;
         this.emotionName = emotionName;
 
@@ -52,8 +52,8 @@ public class Log implements Comparable<Log>{
         return this.id;
     }
 
-    public Date getDate(){
-        return this.date;
+    public Date getDatetime(){
+        return this.datetime;
     }
 
     public String getComment(){
@@ -67,22 +67,22 @@ public class Log implements Comparable<Log>{
     @Override
     public int compareTo(@NonNull Log o) {
         // return 1 if more than o, -1 if less than, 0 if equal
-        Date other_date = o.getDate();
-        if (this.date.after(other_date)){
+        Date other_date = o.getDatetime();
+        if (this.datetime.after(other_date)){
             return 1;
-        } else if (this.date.before(other_date)){
+        } else if (this.datetime.before(other_date)){
             return -1;
         } else {
             return 0;
         }
     }
 
-    public String getDateAsString() {
-        /* Returns date formatted in ISO 8601
+    public String getDateTimeAsString() {
+        /* Returns datetime formatted in ISO 8601
         Modified from Joachim Sauer's answer on https://stackoverflow.com/a/3914498
         */
         SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        return date_format.format(this.date);
+        return date_format.format(this.datetime);
     }
 
     public String getEmotionName() {
@@ -97,13 +97,13 @@ class LiteLog {
     // Class is basically just a data container and sort of a one-trick pony
     //      so making getters/setters seems like overkill
 
-    public Date date;
+    public Date datetime;
     public String comment;
     public String emotionName;
 
-    LiteLog(Date date, String comment, String emotionName){
+    LiteLog(Date datetime, String comment, String emotionName){
         this.comment = comment;
-        this.date = date;
+        this.datetime = datetime;
         this.emotionName = emotionName;
     }
 }
