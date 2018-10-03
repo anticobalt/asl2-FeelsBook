@@ -1,7 +1,7 @@
 package com.cmput301.assignment1.fragment;
 
-import android.app.Dialog;
 import android.app.DatePickerDialog;
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;

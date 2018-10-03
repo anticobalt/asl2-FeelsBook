@@ -1,9 +1,9 @@
 package com.cmput301.assignment1;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
@@ -47,6 +47,10 @@ public class EditActivity extends AppCompatActivity {
             // https://stackoverflow.com/a/262416
             datetimes = (HashMap<String, Integer>) extras.getSerializable("datetimes");
 
+            // DatePickerDialog's month attribute is 0-11 instead of 1-12
+            // Example: https://developer.android.com/reference/android/app/DatePickerDialog
+            datetimes.put("month", datetimes.get("month") - 1);
+
             id = extras.getInt("id");
             comment = extras.getString("comment");
 
@@ -56,19 +60,24 @@ public class EditActivity extends AppCompatActivity {
         commentInput.setText(this.comment);
 
         // Set click listeners
-        dateButton.setOnClickListener(new View.OnClickListener(){
+        setClickListeners();
+
+    }
+
+    private void setClickListeners() {
+        this.dateButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 showDatePickerDialog(v);
             }
         });
-        timeButton.setOnClickListener(new View.OnClickListener(){
+        this.timeButton.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 showTimePickerDialog(v);
             }
         });
-        saveButton.setOnClickListener(new View.OnClickListener() {
+        this.saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Return control to MainActivity, and send everything back
@@ -81,7 +90,7 @@ public class EditActivity extends AppCompatActivity {
                 finish();
             }
         });
-        deleteButton.setOnClickListener(new View.OnClickListener() {
+        this.deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Return control to MainActivity, and signal deletion
@@ -91,7 +100,7 @@ public class EditActivity extends AppCompatActivity {
                 finish();
             }
         });
-        cancelButton.setOnClickListener(new View.OnClickListener() {
+        this.cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // Just return
@@ -99,7 +108,6 @@ public class EditActivity extends AppCompatActivity {
                 finish();
             }
         });
-
     }
 
     protected void showTimePickerDialog(View v){

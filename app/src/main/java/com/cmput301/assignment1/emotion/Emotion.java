@@ -5,5 +5,6 @@ public abstract class Emotion {
     public abstract Integer getEmojiReference();
     public abstract Integer getCount();
     public abstract Integer getSpawnerReference();
+    public abstract String getEmotionName();
 
 }

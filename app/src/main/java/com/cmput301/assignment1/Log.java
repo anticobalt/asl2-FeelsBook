@@ -1,5 +1,6 @@
 package com.cmput301.assignment1;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 
 import com.cmput301.assignment1.emotion.Anger;
@@ -23,7 +24,6 @@ public class Log implements Comparable<Log>{
     private Emotion emotion;
     private Date datetime;
     private String comment;
-    private String emotionName;
 
     public Log(String emotionName, Date datetime, String comment){
 
@@ -40,12 +40,20 @@ public class Log implements Comparable<Log>{
 
         this.datetime = datetime;
         this.comment = comment;
-        this.emotionName = emotionName;
 
     }
 
-    public static Integer getRunningID(){
-        return Log.runningID;
+    @Override
+    public int compareTo(@NonNull Log o) {
+        // return 1 if more than o, -1 if less than, 0 if equal
+        Date other_date = o.getDatetime();
+        if (this.datetime.after(other_date)){
+            return 1;
+        } else if (this.datetime.before(other_date)){
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     public Integer getId() {
@@ -64,29 +72,16 @@ public class Log implements Comparable<Log>{
         return this.emotion.getEmojiReference();
     }
 
-    @Override
-    public int compareTo(@NonNull Log o) {
-        // return 1 if more than o, -1 if less than, 0 if equal
-        Date other_date = o.getDatetime();
-        if (this.datetime.after(other_date)){
-            return 1;
-        } else if (this.datetime.before(other_date)){
-            return -1;
-        } else {
-            return 0;
-        }
+    public String getEmotionName() {
+        return this.emotion.getEmotionName();
     }
 
     public String getDateTimeAsString() {
         /* Returns datetime formatted in ISO 8601
         Modified from Joachim Sauer's answer on https://stackoverflow.com/a/3914498
         */
-        SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         return date_format.format(this.datetime);
-    }
-
-    public String getEmotionName() {
-        return this.emotionName;
     }
 
     public void updateDatetime(Date datetime){

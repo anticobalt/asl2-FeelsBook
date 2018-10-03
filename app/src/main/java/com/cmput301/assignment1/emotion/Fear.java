@@ -29,4 +29,9 @@ public class Fear extends Emotion {
     public Integer getSpawnerReference() {
         return this.spawner_reference;
     }
+
+    @Override
+    public String getEmotionName() {
+        return Fear.name;
+    }
 }

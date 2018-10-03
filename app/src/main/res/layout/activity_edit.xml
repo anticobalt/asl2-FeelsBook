@@ -55,7 +55,8 @@
             android:id="@+id/commentEditView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/comment_prompt" />
+            android:hint="@string/comment_prompt"
+            android:maxLength="100" />
 
     </android.support.design.widget.TextInputLayout>
 

@@ -5,9 +5,9 @@
 package com.cmput301.assignment1;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
@@ -35,10 +35,15 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
+    // Log variables
     private ArrayList<Log> logs = new ArrayList<>();
     private LogsAdapter adapter;
     private ListView logsView;
+
+    // Emoji variables
     private ArrayList<ImageView> emojis = new ArrayList<>();
+
+    // Constants
     private final String SAVEDATA = "data.sav";
     private final int EDIT_LOG_REQUEST = 1;
 
@@ -75,6 +80,74 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /* Occurs when a called activity returns control to this activity
+         * */
+        Integer RESULT_REQUEST_DELETION = 2;
+        Bundle extras;
+
+        // make sure an Intent was actually returned by called Activity
+        // null foreshadows requestCode == RESULT_CANCELLED
+        if (data != null) {
+            extras = data.getExtras();
+        } else {
+            return;
+        }
+
+        if (requestCode == EDIT_LOG_REQUEST ) {
+            if (resultCode == RESULT_OK) {
+
+                Integer id = extras.getInt("id");
+                String comment = extras.getString("comment");
+                Log log = findLogByID(id);
+
+                // Extra is HashMap despite compiler's complaints
+                // https://stackoverflow.com/a/262416
+                HashMap<String, Integer> dt = (HashMap<String, Integer>) extras.getSerializable("datetimes");
+
+                if (log == null) {
+                    // this should never happen
+                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal save error!", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    // Convert integers to date
+                    Calendar c = Calendar.getInstance();
+                    c.set(dt.get("year"), dt.get("month"), dt.get("day"), dt.get("hour"), dt.get("minute"));
+                    // Set date and comment
+                    log.updateDatetime(c.getTime());
+                    log.updateComment(comment);
+                    System.out.println(log.getComment());
+                    System.out.println(log.getDateTimeAsString());
+                }
+
+                // Sort array, notify change, and save
+                Collections.sort(this.logs);
+                Collections.reverse(this.logs);
+                this.adapter.notifyDataSetChanged();
+                saveFileData();
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // Don't do anything for now if called activity quits without doing anything
+
+            } else if (resultCode == RESULT_REQUEST_DELETION){
+
+                Integer id = extras.getInt("id");
+                Integer status = deleteLogAtID(id);
+                if (status == -1){
+                    // Couldn't find log; shouldn't ever happen
+                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal error! Deletion failed.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+
+                // Notify change and save
+                this.adapter.notifyDataSetChanged();
+                saveFileData();
+
+            }
+        }
+    }
+
     private void loadFileData() {
     /* Try to open save file and bind it's contents to Log ArrayList */
 
@@ -103,6 +176,35 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
+    }
+
+    private void saveFileData() {
+
+        try {
+
+            // Prep work
+            FileOutputStream fos = openFileOutput(SAVEDATA, 0);
+            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            BufferedWriter writer = new BufferedWriter(osw);
+            Gson gson = new Gson();
+
+            // Create array of LiteLogs to allow for serialization
+            ArrayList<LiteLog> liteLogs = new ArrayList<>();
+            for (Log log: logs){
+                LiteLog litelog = new LiteLog(log.getDatetime(), log.getComment(), log.getEmotionName());
+                liteLogs.add(litelog);
+            }
+
+            // convert to Json and write
+            gson.toJson(liteLogs, writer);
+            writer.flush();
+            fos.close();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setLogsListener(ListView logsView) {
@@ -161,74 +263,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /* Called when a called activity returns control to this activity
-        * */
-        Integer RESULT_REQUEST_DELETION = 2;
-        Bundle extras;
-
-        // make sure an Intent was actually returned by called Activity
-        // null foreshadows requestCode == RESULT_CANCELLED
-        if (data != null) {
-             extras = data.getExtras();
-        } else {
-            return;
-        }
-
-        if (requestCode == EDIT_LOG_REQUEST ) {
-            if (resultCode == RESULT_OK) {
-
-                Integer id = extras.getInt("id");
-                String comment = extras.getString("comment");
-                Log log = findLogByID(id);
-
-                // Extra is HashMap despite compiler's complaints
-                // https://stackoverflow.com/a/262416
-                HashMap<String, Integer> dt = (HashMap<String, Integer>) extras.getSerializable("datetimes");
-
-                if (log == null) {
-                    // this should never happen
-                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal save error!", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else {
-                    // Convert integers to date
-                    Calendar c = Calendar.getInstance();
-                    c.set(dt.get("year"), dt.get("month"), dt.get("day"), dt.get("hour"), dt.get("minute"));
-                    // Set date and comment
-                    log.updateDatetime(c.getTime());
-                    log.updateComment(comment);
-                    System.out.println(log.getComment());
-                    System.out.println(log.getDateTimeAsString());
-                }
-
-                // Sort array, notify change, and save
-                Collections.sort(this.logs);
-                Collections.reverse(this.logs);
-                this.adapter.notifyDataSetChanged();
-                saveFileData();
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // Don't do anything for now if called activity quits without doing anything
-
-            } else if (resultCode == RESULT_REQUEST_DELETION){
-
-                Integer id = extras.getInt("id");
-                Integer status = deleteLogAtID(id);
-                if (status == -1){
-                    // Couldn't find log; shouldn't ever happen
-                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal error! Deletion failed.", Toast.LENGTH_SHORT);
-                    toast.show();
-                }
-
-                // Notify change and save
-                this.adapter.notifyDataSetChanged();
-                saveFileData();
-
-            }
-        }
-    }
-
     private Log findLogByID(Integer id) {
         // Linear search because it's quick and easy to implement
         for(Log log : this.logs){
@@ -240,6 +274,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Integer deleteLogAtID(Integer id) {
+        /* Returns 0 on success, -1 on failure */
         for(int i = 0; i < this.logs.size(); i++){
             if (logs.get(i).getId().equals(id)){
                 logs.remove(i);
@@ -247,35 +282,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return -1;
-    }
-
-    private void saveFileData() {
-
-        try {
-
-            // Prep work
-            FileOutputStream fos = openFileOutput(SAVEDATA, 0);
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            BufferedWriter writer = new BufferedWriter(osw);
-            Gson gson = new Gson();
-
-            // Create array of LiteLogs to allow for serialization
-            ArrayList<LiteLog> liteLogs = new ArrayList<>();
-            for (Log log: logs){
-                LiteLog litelog = new LiteLog(log.getDatetime(), log.getComment(), log.getEmotionName());
-                liteLogs.add(litelog);
-            }
-
-            // convert to Json and write
-            gson.toJson(liteLogs, writer);
-            writer.flush();
-            fos.close();
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private HashMap<String, Integer> getDateTimeAsIntHash(String dateTimeString){
