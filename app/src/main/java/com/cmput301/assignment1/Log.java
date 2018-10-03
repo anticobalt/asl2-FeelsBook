@@ -89,6 +89,14 @@ public class Log implements Comparable<Log>{
         return this.emotionName;
     }
 
+    public void updateDatetime(Date datetime){
+        this.datetime = datetime;
+    }
+
+    public void updateComment(String comment){
+        this.comment = comment;
+    }
+
 }
 
 class LiteLog {

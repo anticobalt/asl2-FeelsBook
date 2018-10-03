@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -26,7 +27,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView logsView;
     private ArrayList<ImageView> emojis = new ArrayList<>();
     private final String SAVEDATA = "data.sav";
+    private final int EDIT_LOG_REQUEST = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,10 +117,11 @@ public class MainActivity extends AppCompatActivity {
 
                 // Intents can only be packaged with standard-typed variables,
                 //      so Logs will have to be dissected, then passed to activity
+                HashMap<String, Integer> datetimes = getDateTimeAsIntHash(log.getDateTimeAsString());
                 intent.putExtra("id", log.getId());
-                intent.putExtra("datetime_string", log.getDateTimeAsString());
+                intent.putExtra("datetimes", datetimes);
                 intent.putExtra("comment", log.getComment());
-                startActivity(intent);
+                startActivityForResult(intent, EDIT_LOG_REQUEST);
             }
         });
     }
@@ -154,6 +160,79 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /* Called when a called activity returns control to this activity
+        * */
+        Integer RESULT_REQUEST_DELETION = 2;
+        Bundle extras;
+
+        // make sure an Intent was actually returned by called Activity
+        // null foreshadows requestCode == RESULT_CANCELLED
+        if (data != null) {
+             extras = data.getExtras();
+        } else {
+            return;
+        }
+
+        if (requestCode == EDIT_LOG_REQUEST ) {
+            if (resultCode == RESULT_OK) {
+
+                Integer id = extras.getInt("id");
+                String comment = extras.getString("comment");
+                Log log = findLogByID(id);
+
+                // Extra is HashMap despite compiler's complaints
+                // https://stackoverflow.com/a/262416
+                HashMap<String, Integer> dt = (HashMap<String, Integer>) extras.getSerializable("datetimes");
+
+                if (log == null) {
+                    // this should never happen
+                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal save error!", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    // Convert integers to date
+                    Calendar c = Calendar.getInstance();
+                    c.set(dt.get("year"), dt.get("month"), dt.get("day"), dt.get("hour"), dt.get("minute"));
+                    // Set date and comment
+                    log.updateDatetime(c.getTime());
+                    log.updateComment(comment);
+                }
+
+            } else if (resultCode == RESULT_CANCELED) {
+                // Don't do anything for now if called activity quits without doing anything
+            } else if (resultCode == RESULT_REQUEST_DELETION){
+                Integer id = extras.getInt("id");
+                Integer status = deleteLogAtID(id);
+                if (status == -1){
+                    // Couldn't find log; shouldn't ever happen
+                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal error! Deletion failed.", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        }
+    }
+
+    private Log findLogByID(Integer id) {
+        // Linear search because it's quick and easy to implement
+        for(Log log : this.logs){
+            if (log.getId().equals(id)){
+                return log;
+            }
+        }
+        return null;
+    }
+
+    private Integer deleteLogAtID(Integer id) {
+        for(int i = 0; i < this.logs.size(); i++){
+            if (logs.get(i).getId().equals(id)){
+                logs.remove(i);
+                return 0;
+            }
+        }
+        return -1;
+    }
+
     private void saveFileData() {
 
         try {
@@ -182,4 +261,32 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
+    private HashMap<String, Integer> getDateTimeAsIntHash(String dateTimeString){
+        /* Converts "Year-Month-DayTHour:Minute:Second" to [Year, Month, Day, Hour, Minute, Second]
+         *       in hash-table format (accessed by name e.g. "year"), then binds it to member attributes
+         * */
+
+        ArrayList<String> names = new ArrayList<>(Arrays.asList("year", "month", "day", "hour", "minute"));
+        ArrayList<String> dateTimeStringArray = new ArrayList<>();
+
+        // Isolate the components
+        String[] temp = dateTimeString.split("T");
+        String[] date = temp[0].split("-");
+        String[] time = temp[1].split(":");
+
+        // Collect them (as strings)
+        dateTimeStringArray.addAll(Arrays.asList(date));
+        dateTimeStringArray.addAll(Arrays.asList(time));
+
+        // Convert to integers
+        HashMap<String, Integer> dateTimeHash = new HashMap<>();
+        for (int i = 0; i < names.size(); i++) {
+            dateTimeHash.put(names.get(i), Integer.valueOf(dateTimeStringArray.get(i)));
+        }
+
+        return dateTimeHash;
+
+    }
+
 }
