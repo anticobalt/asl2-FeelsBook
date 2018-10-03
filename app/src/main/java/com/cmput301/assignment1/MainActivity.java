@@ -29,6 +29,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -197,11 +198,21 @@ public class MainActivity extends AppCompatActivity {
                     // Set date and comment
                     log.updateDatetime(c.getTime());
                     log.updateComment(comment);
+                    System.out.println(log.getComment());
+                    System.out.println(log.getDateTimeAsString());
                 }
+
+                // Sort array, notify change, and save
+                Collections.sort(this.logs);
+                Collections.reverse(this.logs);
+                this.adapter.notifyDataSetChanged();
+                saveFileData();
 
             } else if (resultCode == RESULT_CANCELED) {
                 // Don't do anything for now if called activity quits without doing anything
+
             } else if (resultCode == RESULT_REQUEST_DELETION){
+
                 Integer id = extras.getInt("id");
                 Integer status = deleteLogAtID(id);
                 if (status == -1){
@@ -209,6 +220,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(), "Fatal error! Deletion failed.", Toast.LENGTH_SHORT);
                     toast.show();
                 }
+
+                // Notify change and save
+                this.adapter.notifyDataSetChanged();
+                saveFileData();
+
             }
         }
     }

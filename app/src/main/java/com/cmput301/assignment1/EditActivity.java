@@ -1,6 +1,7 @@
 package com.cmput301.assignment1;
 
 import android.content.Intent;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -18,17 +19,25 @@ public class EditActivity extends AppCompatActivity {
     private HashMap<String, Integer> datetimes;
     private final Integer RESULT_REQUEST_DELETION = 2;
 
+    // Declare buttons and views
+    private Button dateButton;
+    private Button timeButton;
+    private Button saveButton;
+    private Button deleteButton;
+    private Button cancelButton;
+    private TextInputEditText commentInput;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit);
 
-        // Initialize buttons
-        Button dateButton = findViewById(R.id.dateButton);
-        Button timeButton = findViewById(R.id.timeButton);
-        Button saveButton = findViewById(R.id.saveButton);
-        Button deleteButton = findViewById(R.id.deleteButton);
-        Button cancelButton = findViewById(R.id.cancelButton);
+        this.dateButton = findViewById(R.id.dateButton);
+        this.timeButton = findViewById(R.id.timeButton);
+        this.saveButton = findViewById(R.id.saveButton);
+        this.deleteButton = findViewById(R.id.deleteButton);
+        this.cancelButton = findViewById(R.id.cancelButton);
+        this.commentInput = findViewById(R.id.commentEditView);
 
         // Fetch Intent extras
         Bundle extras = getIntent().getExtras();
@@ -42,6 +51,9 @@ public class EditActivity extends AppCompatActivity {
             comment = extras.getString("comment");
 
         }
+
+        // Display comment
+        commentInput.setText(this.comment);
 
         // Set click listeners
         dateButton.setOnClickListener(new View.OnClickListener(){
@@ -60,6 +72,7 @@ public class EditActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // Return control to MainActivity, and send everything back
+                EditActivity.this.comment = EditActivity.this.commentInput.getText().toString();
                 Intent intent = new Intent();
                 intent.putExtra("id", EditActivity.this.id);
                 intent.putExtra("comment", EditActivity.this.comment);
