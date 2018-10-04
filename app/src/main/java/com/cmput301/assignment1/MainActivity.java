@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -47,13 +48,18 @@ public class MainActivity extends AppCompatActivity {
     // Constants
     private final String LOGS_FILE = "logs.sav";
     private final int EDIT_LOG_REQUEST = 1;
-    // Either hard or impossible to keep array of Class references, so strings it is
-    private ArrayList<String> emotionNames = new ArrayList<>(Arrays.asList("anger", "fear", "joy", "love", "sadness", "surprise"));
+    // Either hard or impossible to keep array of Class references, so as non-ideal as it, use strings
+    private ArrayList<String> emotionNames = new ArrayList<>(
+            Arrays.asList("anger", "fear", "joy", "love", "sadness", "surprise"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Remove the action bar; no use for now
+        // https://stackoverflow.com/a/27712413
+        getSupportActionBar().hide();
 
         // Initialize emotionCounts
         for (String name : emotionNames){
@@ -62,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Get user data, if it exists; requires emotionCounts
         loadFileData();
+        updateEmotionCountViews();
 
         // Get the ListView that holds logs
         logsView = findViewById(R.id.logsListView);
@@ -153,6 +160,27 @@ public class MainActivity extends AppCompatActivity {
                 saveFileData();
 
             }
+        }
+    }
+
+    private void updateEmotionCountViews() {
+
+        /* countViewIDs is a parallel array to MainActivity.emotionNames
+            To remove reliance on parallel arrays, IDs and emotion names would have to be
+                bundled together in a data structure. However, as IDs are dynamically generated,
+                and this app is persistent, they would have to be re-bundled everytime the app
+                restarts i.e. manual declaration of IDs and their relationship with emotion names
+                would happen somewhere.
+            As a result, bundling would provide little gain and more overhead, as these IDs are
+                used in this method.
+        * */
+        ArrayList<Integer> countViewIDs = new ArrayList<>(Arrays.asList(R.id.angerCount,
+                R.id.fearCount, R.id.joyCount, R.id.loveCount, R.id.sadCount, R.id.surpriseCount));
+
+        //for every counts view, put its corresponding count
+        for (int i = 0; i < countViewIDs.size(); i++){
+            TextView tv = findViewById(countViewIDs.get(i));
+            tv.setText(String.valueOf(this.emotionCounts.get(this.emotionNames.get(i))));
         }
     }
 
@@ -270,7 +298,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 logs.add(0, new Log(name, new Date(), comment));
                 // count += 1
-                MainActivity.this.emotionCounts.put("love", MainActivity.this.emotionCounts.get("love") + 1);
+                MainActivity.this.emotionCounts.put(name, MainActivity.this.emotionCounts.get(name) + 1);
+                updateEmotionCountViews();
 
                 adapter.notifyDataSetChanged();
 
@@ -293,12 +322,20 @@ public class MainActivity extends AppCompatActivity {
 
     private Integer deleteLogAtID(Integer id) {
         /* Returns 0 on success, -1 on failure */
+
         for(int i = 0; i < this.logs.size(); i++){
             if (logs.get(i).getId().equals(id)){
+
+                // Decrement running count of emotion
                 String name = logs.get(i).getEmotion().getEmotionName();
                 this.emotionCounts.put(name, this.emotionCounts.get(name) - 1);
+
+                // Update views and remove from array
+                updateEmotionCountViews();
                 logs.remove(i);
+
                 return 0;
+
             }
         }
         return -1;
