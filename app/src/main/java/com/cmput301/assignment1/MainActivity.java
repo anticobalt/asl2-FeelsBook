@@ -15,8 +15,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cmput301.assignment1.emotion.Anger;
+import com.cmput301.assignment1.emotion.Emotion;
+import com.cmput301.assignment1.emotion.Fear;
+import com.cmput301.assignment1.emotion.Joy;
+import com.cmput301.assignment1.emotion.Love;
+import com.cmput301.assignment1.emotion.Sadness;
+import com.cmput301.assignment1.emotion.Surprise;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -44,13 +53,14 @@ public class MainActivity extends AppCompatActivity {
     // Emotion/emoji variables
     private ArrayList<ImageView> emojis = new ArrayList<>();
     private HashMap<String, Integer> emotionCounts = new HashMap<>();
+    private ArrayList<TextView> emotionCountViews = new ArrayList<>();
 
     // Constants
     private final String LOGS_FILE = "logs.sav";
     private final int EDIT_LOG_REQUEST = 1;
-    // Either hard or impossible to keep array of Class references, so as non-ideal as it, use strings
-    private ArrayList<String> emotionNames = new ArrayList<>(
-            Arrays.asList("anger", "fear", "joy", "love", "sadness", "surprise"));
+    private ArrayList<Class<? extends Emotion>> emotions = new ArrayList<>(Arrays.asList(
+            Anger.class, Fear.class, Joy.class, Love.class,
+            Sadness.class, Surprise.class));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +72,10 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         // Initialize emotionCounts
-        for (String name : emotionNames){
-            emotionCounts.put(name, 0);
+        // https://stackoverflow.com/a/1181976
+        for (Class emotion : emotions){
+            String name = emotion.getName();
+            emotionCounts.put(name.substring(name.lastIndexOf(".") + 1), 0);
         }
 
         // Get user data, if it exists; requires emotionCounts
@@ -84,6 +96,14 @@ public class MainActivity extends AppCompatActivity {
         emojis.add((ImageView) findViewById(R.id.surpriseView));
         emojis.add((ImageView) findViewById(R.id.joyView));
         emojis.add((ImageView) findViewById(R.id.sadView));
+
+        // Collect emotion count TextViews
+        emotionCountViews.add((TextView) findViewById(R.id.loveCount));
+        emotionCountViews.add((TextView) findViewById(R.id.angerCount));
+        emotionCountViews.add((TextView) findViewById(R.id.fearCount));
+        emotionCountViews.add((TextView) findViewById(R.id.surpriseCount));
+        emotionCountViews.add((TextView) findViewById(R.id.joyCount));
+        emotionCountViews.add((TextView) findViewById(R.id.sadCount));
 
         // Set click listener for each emoji
         for (ImageView emoji: emojis){
@@ -178,23 +198,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateEmotionCountViews() {
-
-        /* countViewIDs is a parallel array to MainActivity.emotionNames
-            To remove reliance on parallel arrays, IDs and emotion names would have to be
-                bundled together in a data structure. However, as IDs are dynamically generated,
-                and this app is persistent, they would have to be re-bundled everytime the app
-                restarts i.e. manual declaration of IDs and their relationship with emotion names
-                would happen somewhere.
-            As a result, bundling would provide little gain and more overhead, as these IDs are
-                used in this method.
-        * */
-        ArrayList<Integer> countViewIDs = new ArrayList<>(Arrays.asList(R.id.angerCount,
-                R.id.fearCount, R.id.joyCount, R.id.loveCount, R.id.sadCount, R.id.surpriseCount));
-
-        //for every counts view, put its corresponding count
-        for (int i = 0; i < countViewIDs.size(); i++){
-            TextView tv = findViewById(countViewIDs.get(i));
-            tv.setText(String.valueOf(this.emotionCounts.get(this.emotionNames.get(i))));
+        // for every count view, find associated class' name, then use as hashmap key
+        //      to update view's text
+        for (TextView countView : this.emotionCountViews){
+            String associated_class_name = countView.getTag().toString();
+            for (Class emotion : emotions){
+                String name = emotion.getName();
+                String key = name.substring(name.lastIndexOf(".") + 1);
+                if (associated_class_name.equals(key)){
+                    countView.setText(emotionCounts.get(key).toString());
+                }
+            }
         }
     }
 
@@ -222,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Get emotion counts by iterating over logs array
             for (Log log : this.logs){
-                String name = log.getEmotion().getEmotionName();
+                String name = log.getEmotion().getEmotionName().toUpperCase();
                 this.emotionCounts.put(name, this.emotionCounts.get(name) + 1); // count += 1
             }
 
@@ -247,7 +261,8 @@ public class MainActivity extends AppCompatActivity {
             // Create array of LiteLogs to allow for serialization
             ArrayList<LiteLog> liteLogs = new ArrayList<>();
             for (Log log: logs){
-                LiteLog litelog = new LiteLog(log.getDatetime(), log.getComment(), log.getEmotion().getEmotionName());
+                LiteLog litelog = new LiteLog(log.getDatetime(), log.getComment(),
+                        log.getEmotion().getEmotionName().toUpperCase());
                 liteLogs.add(litelog);
             }
 
@@ -300,30 +315,30 @@ public class MainActivity extends AppCompatActivity {
                 // clear it
                 textbox.setText("");
 
-                // For each emoji, manually determine associated Emotion
-                //      then create Log instance with that Emotion. Logs are prepended.
-                // Doing it this way avoids having to create unique listener for every emoji
-                String name = "unidentified";  // should always be replaced
-                switch(emoji.getId()){
-                    case R.id.loveView: name = "love"; break;
-                    case R.id.fearView: name = "fear"; break;
-                    case R.id.angerView: name = "anger"; break;
-                    case R.id.surpriseView: name = "surprise"; break;
-                    case R.id.joyView: name = "joy"; break;
-                    case R.id.sadView: name = "sadness"; break;
+                // find the emotion name
+                String name = null;
+                for (Class emotion : emotions){
+                    name = emotion.getName();
+                    name = name.substring(name.lastIndexOf(".") + 1);
+                    if (name.equals(emoji.getTag().toString())){
+                        break;
+                    }
                 }
-                logs.add(0, new Log(name, new Date(), comment));
-                // count += 1
-                MainActivity.this.emotionCounts.put(name, MainActivity.this.emotionCounts.get(name) + 1);
-                updateEmotionCountViews();
+                // create log with emotion name, update everything, save
+                if (name != null) {
+                    MainActivity.this.logs.add(0, new Log(name, new Date(), comment));
 
-                adapter.notifyDataSetChanged();
+                    // count += 1
+                    MainActivity.this.emotionCounts.put(name, MainActivity.this.emotionCounts.get(name) + 1);
+                    updateEmotionCountViews();
 
-                // save changes and notify
-                saveFileData();
-                Toast toast = Toast.makeText(getApplicationContext(), success_message, Toast.LENGTH_SHORT);
-                toast.show();
+                    adapter.notifyDataSetChanged();
 
+                    // save changes and notify
+                    saveFileData();
+                    Toast toast = Toast.makeText(getApplicationContext(), success_message, Toast.LENGTH_SHORT);
+                    toast.show();
+                }
             }
         });
     }
@@ -345,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
             if (logs.get(i).getId().equals(id)){
 
                 // Decrement running count of emotion
-                String name = logs.get(i).getEmotion().getEmotionName();
+                String name = logs.get(i).getEmotion().getEmotionName().toUpperCase();
                 this.emotionCounts.put(name, this.emotionCounts.get(name) - 1);
 
                 // Update views and remove from array

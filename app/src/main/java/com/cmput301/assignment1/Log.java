@@ -30,12 +30,12 @@ public class Log implements Comparable<Log>{
         this.id = ++runningID;
 
         switch (emotionName){
-            case "anger": this.emotion = new Anger(); break;
-            case "fear": this.emotion = new Fear(); break;
-            case "joy": this.emotion = new Joy(); break;
-            case "love": this.emotion = new Love(); break;
-            case "sadness": this.emotion = new Sadness(); break;
-            case "surprise": this.emotion = new Surprise(); break;
+            case "Anger": this.emotion = new Anger(); break;
+            case "Fear": this.emotion = new Fear(); break;
+            case "Joy": this.emotion = new Joy(); break;
+            case "Love": this.emotion = new Love(); break;
+            case "Sadness": this.emotion = new Sadness(); break;
+            case "Surprise": this.emotion = new Surprise(); break;
         }
 
         this.datetime = datetime;

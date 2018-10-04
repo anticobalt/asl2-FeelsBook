@@ -52,14 +52,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/joy" />
+                app:srcCompat="@drawable/joy"
+                android:tag="Joy" />
 
             <TextView
                 android:id="@+id/joyCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="Joy" />
         </LinearLayout>
 
         <LinearLayout
@@ -75,15 +77,15 @@
                 android:layout_height="50dp"
                 android:layout_weight="1"
                 app:srcCompat="@drawable/fear"
-                tools:layout_editor_absoluteX="53dp"
-                tools:layout_editor_absoluteY="313dp" />
+                android:tag="Fear" />
 
             <TextView
                 android:id="@+id/fearCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="Fear" />
         </LinearLayout>
 
         <LinearLayout
@@ -98,14 +100,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/love" />
+                app:srcCompat="@drawable/love"
+                android:tag="Love" />
 
             <TextView
                 android:id="@+id/loveCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="Love" />
         </LinearLayout>
 
         <LinearLayout
@@ -120,14 +124,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/surprise" />
+                app:srcCompat="@drawable/surprise"
+                android:tag="Surprise" />
 
             <TextView
                 android:id="@+id/surpriseCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="Surprise" />
         </LinearLayout>
 
         <LinearLayout
@@ -142,14 +148,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/anger" />
+                app:srcCompat="@drawable/anger"
+                android:tag="Anger" />
 
             <TextView
                 android:id="@+id/angerCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="Anger" />
         </LinearLayout>
 
         <LinearLayout
@@ -164,14 +172,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                app:srcCompat="@drawable/sad" />
+                app:srcCompat="@drawable/sad"
+                android:tag="Sadness" />
 
             <TextView
                 android:id="@+id/sadCount"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center" />
+                android:gravity="center"
+                android:tag="Sadness" />
         </LinearLayout>
 
     </LinearLayout>
