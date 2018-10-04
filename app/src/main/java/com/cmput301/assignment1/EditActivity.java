@@ -6,6 +6,7 @@ import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.cmput301.assignment1.fragment.DatePickerFragment;
 import com.cmput301.assignment1.fragment.TimePickerFragment;
@@ -62,6 +63,14 @@ public class EditActivity extends AppCompatActivity {
         // Set click listeners
         setClickListeners();
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        String cancel_message = "Editing canceled: no changes made.";
+        Toast toast = Toast.makeText(getApplicationContext(), cancel_message, Toast.LENGTH_SHORT);
+        toast.show();
+        super.onBackPressed();
     }
 
     private void setClickListeners() {
