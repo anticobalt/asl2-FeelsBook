@@ -111,6 +111,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (requestCode == EDIT_LOG_REQUEST ) {
+
+            String save_message = "Log saved!";
+            String delete_message = "Log deleted!";
+            String cancel_message = "Editing canceled: no changes made.";
+            String save_error_message = "Fatal save error!";
+            String delete_error_message = "Fatal error! Deletion failed.";
+
             if (resultCode == RESULT_OK) {
 
                 Integer id = extras.getInt("id");
@@ -123,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (log == null) {
                     // this should never happen
-                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal save error!", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), save_error_message, Toast.LENGTH_SHORT);
                     toast.show();
                 } else {
                     // Convert integers to date
@@ -132,18 +139,21 @@ public class MainActivity extends AppCompatActivity {
                     // Set date and comment
                     log.updateDatetime(c.getTime());
                     log.updateComment(comment);
-                    System.out.println(log.getComment());
-                    System.out.println(log.getDateTimeAsString());
                 }
 
-                // Sort array, notify change, and save
+                // Sort array, notify adapter, and save
                 Collections.sort(this.logs);
                 Collections.reverse(this.logs);
                 this.adapter.notifyDataSetChanged();
                 saveFileData();
 
+                // Notify user
+                Toast toast = Toast.makeText(getApplicationContext(), save_message, Toast.LENGTH_SHORT);
+                toast.show();
+
             } else if (resultCode == RESULT_CANCELED) {
-                // Don't do anything for now if called activity quits without doing anything
+                Toast toast = Toast.makeText(getApplicationContext(), cancel_message, Toast.LENGTH_SHORT);
+                toast.show();
 
             } else if (resultCode == RESULT_REQUEST_DELETION){
 
@@ -151,13 +161,17 @@ public class MainActivity extends AppCompatActivity {
                 Integer status = deleteLogAtID(id);
                 if (status == -1){
                     // Couldn't find log; shouldn't ever happen
-                    Toast toast = Toast.makeText(getApplicationContext(), "Fatal error! Deletion failed.", Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(), delete_error_message, Toast.LENGTH_SHORT);
                     toast.show();
                 }
 
-                // Notify change and save
+                // Notify adapter and save
                 this.adapter.notifyDataSetChanged();
                 saveFileData();
+
+                // Notify user
+                Toast toast = Toast.makeText(getApplicationContext(), delete_message, Toast.LENGTH_SHORT);
+                toast.show();
 
             }
         }
@@ -277,6 +291,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v){
 
+                String success_message = "Log added!";
+
                 // fetch comment from textbox
                 TextInputEditText textbox = findViewById(R.id.textboxView);
                 String comment = textbox.getText().toString();
@@ -303,8 +319,10 @@ public class MainActivity extends AppCompatActivity {
 
                 adapter.notifyDataSetChanged();
 
-                // save changes
+                // save changes and notify
                 saveFileData();
+                Toast toast = Toast.makeText(getApplicationContext(), success_message, Toast.LENGTH_SHORT);
+                toast.show();
 
             }
         });

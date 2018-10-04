@@ -27,7 +27,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState){
-        return new TimePickerDialog(getActivity(), this, this.hour, this.minute, false);
+        return new TimePickerDialog(getActivity(), this, this.hour, this.minute, true);
     }
 
     @Override

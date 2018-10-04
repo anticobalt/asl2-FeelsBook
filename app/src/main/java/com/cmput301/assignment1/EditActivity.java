@@ -103,8 +103,9 @@ public class EditActivity extends AppCompatActivity {
         this.cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Just return
-                setResult(RESULT_CANCELED);
+                // Just return; MainActivity.onActivityResult won't be called without intent argument
+                Intent intent = new Intent();
+                setResult(RESULT_CANCELED, intent);
                 finish();
             }
         });
