@@ -7,6 +7,7 @@ package com.cmput301.assignment1;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputEditText;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -43,13 +46,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Emotion/emoji variables
     private ArrayList<ImageView> emojis = new ArrayList<>();
+    private ArrayList<TextView> countViews = new ArrayList<>();
     private HashMap<String, Integer> emotionCounts = new HashMap<>();
 
     // Constants
     private final String LOGS_FILE = "logs.sav";
     private final int EDIT_LOG_REQUEST = 1;
-    // Either hard or impossible to keep array of Class references, so as non-ideal as it, use strings
-    private ArrayList<String> emotionNames = new ArrayList<>(
+    private final ArrayList<String> emotionNames = new ArrayList<>(
             Arrays.asList("anger", "fear", "joy", "love", "sadness", "surprise"));
 
     @Override
@@ -59,7 +62,12 @@ public class MainActivity extends AppCompatActivity {
 
         // Remove the action bar; no use for now
         // https://stackoverflow.com/a/27712413
-        getSupportActionBar().hide();
+        try{
+            ActionBar ab = getSupportActionBar();
+            ab.hide();
+        } catch (NullPointerException e){
+            e.printStackTrace();
+        }
 
         // Initialize emotionCounts
         for (String name : emotionNames){
@@ -68,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Get user data, if it exists; requires emotionCounts
         loadFileData();
-        updateEmotionCountViews();
 
         // Get the ListView that holds logs
         logsView = findViewById(R.id.logsListView);
@@ -77,13 +84,24 @@ public class MainActivity extends AppCompatActivity {
         adapter = new LogsAdapter(this, R.layout.log, logs);
         logsView.setAdapter(adapter);
 
-        // Collect emoji ImageViews
+        // Collect generated emoji ImageViews
         emojis.add((ImageView) findViewById(R.id.loveView));
         emojis.add((ImageView) findViewById(R.id.angerView));
         emojis.add((ImageView) findViewById(R.id.fearView));
         emojis.add((ImageView) findViewById(R.id.surpriseView));
         emojis.add((ImageView) findViewById(R.id.joyView));
         emojis.add((ImageView) findViewById(R.id.sadView));
+
+        // Collect generated emotion counter TextViews
+        countViews.add((TextView) findViewById(R.id.sadCount));
+        countViews.add((TextView) findViewById(R.id.angerCount));
+        countViews.add((TextView) findViewById(R.id.fearCount));
+        countViews.add((TextView) findViewById(R.id.joyCount));
+        countViews.add((TextView) findViewById(R.id.surpriseCount));
+        countViews.add((TextView) findViewById(R.id.loveCount));
+
+        // Now that they've been collected, update them
+        updateEmotionCountViews();
 
         // Set click listener for each emoji
         for (ImageView emoji: emojis){
@@ -178,23 +196,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateEmotionCountViews() {
-
-        /* countViewIDs is a parallel array to MainActivity.emotionNames
-            To remove reliance on parallel arrays, IDs and emotion names would have to be
-                bundled together in a data structure. However, as IDs are dynamically generated,
-                and this app is persistent, they would have to be re-bundled everytime the app
-                restarts i.e. manual declaration of IDs and their relationship with emotion names
-                would happen somewhere.
-            As a result, bundling would provide little gain and more overhead, as these IDs are
-                used in this method.
-        * */
-        ArrayList<Integer> countViewIDs = new ArrayList<>(Arrays.asList(R.id.angerCount,
-                R.id.fearCount, R.id.joyCount, R.id.loveCount, R.id.sadCount, R.id.surpriseCount));
-
-        //for every counts view, put its corresponding count
-        for (int i = 0; i < countViewIDs.size(); i++){
-            TextView tv = findViewById(countViewIDs.get(i));
-            tv.setText(String.valueOf(this.emotionCounts.get(this.emotionNames.get(i))));
+        /* For every counts view, put in its corresponding count */
+        String emotion;
+        for (TextView tv : this.countViews){
+            emotion = tv.getTag().toString();
+            tv.setText(this.emotionCounts.get(emotion).toString());
         }
     }
 
