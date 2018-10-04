@@ -40,19 +40,27 @@ public class MainActivity extends AppCompatActivity {
     private LogsAdapter adapter;
     private ListView logsView;
 
-    // Emoji variables
+    // Emotion/emoji variables
     private ArrayList<ImageView> emojis = new ArrayList<>();
+    private HashMap<String, Integer> emotionCounts = new HashMap<>();
 
     // Constants
-    private final String SAVEDATA = "data.sav";
+    private final String LOGS_FILE = "logs.sav";
     private final int EDIT_LOG_REQUEST = 1;
+    // Either hard or impossible to keep array of Class references, so strings it is
+    private ArrayList<String> emotionNames = new ArrayList<>(Arrays.asList("anger", "fear", "joy", "love", "sadness", "surprise"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Get user data, if it exists
+        // Initialize emotionCounts
+        for (String name : emotionNames){
+            emotionCounts.put(name, 0);
+        }
+
+        // Get user data, if it exists; requires emotionCounts
         loadFileData();
 
         // Get the ListView that holds logs
@@ -153,8 +161,8 @@ public class MainActivity extends AppCompatActivity {
 
         try {
 
-            // Read file
-            FileInputStream fis = openFileInput(SAVEDATA);
+            // Read logs file
+            FileInputStream fis = openFileInput(LOGS_FILE);
             InputStreamReader isr = new InputStreamReader(fis);
             BufferedReader reader = new BufferedReader(isr);
             Gson gson = new Gson();
@@ -167,8 +175,15 @@ public class MainActivity extends AppCompatActivity {
                 String e = liteLog.emotionName;
                 String c = liteLog.comment;
                 Log actualLog = new Log(e, d, c);
-                logs.add(actualLog);
+                this.logs.add(actualLog);
             }
+
+            // Get emotion counts by iterating over logs array
+            for (Log log : this.logs){
+                String name = log.getEmotion().getEmotionName();
+                this.emotionCounts.put(name, this.emotionCounts.get(name) + 1); // count += 1
+            }
+
 
         } catch (FileNotFoundException e){
             // if user has nothing already saved, or something else goes wrong
@@ -181,9 +196,8 @@ public class MainActivity extends AppCompatActivity {
     private void saveFileData() {
 
         try {
-
             // Prep work
-            FileOutputStream fos = openFileOutput(SAVEDATA, 0);
+            FileOutputStream fos = openFileOutput(LOGS_FILE, 0);
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             BufferedWriter writer = new BufferedWriter(osw);
             Gson gson = new Gson();
@@ -191,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             // Create array of LiteLogs to allow for serialization
             ArrayList<LiteLog> liteLogs = new ArrayList<>();
             for (Log log: logs){
-                LiteLog litelog = new LiteLog(log.getDatetime(), log.getComment(), log.getEmotionName());
+                LiteLog litelog = new LiteLog(log.getDatetime(), log.getComment(), log.getEmotion().getEmotionName());
                 liteLogs.add(litelog);
             }
 
@@ -245,14 +259,18 @@ public class MainActivity extends AppCompatActivity {
                 // For each emoji, manually determine associated Emotion
                 //      then create Log instance with that Emotion. Logs are prepended.
                 // Doing it this way avoids having to create unique listener for every emoji
+                String name = "unidentified";  // should always be replaced
                 switch(emoji.getId()){
-                    case R.id.loveView: logs.add(0, new Log("love", new Date(), comment)); break;
-                    case R.id.fearView: logs.add(0, new Log("fear", new Date(), comment)); break;
-                    case R.id.angerView: logs.add(0, new Log("anger", new Date(), comment)); break;
-                    case R.id.surpriseView: logs.add(0, new Log("surprise", new Date(), comment)); break;
-                    case R.id.joyView: logs.add(0, new Log("joy", new Date(), comment)); break;
-                    case R.id.sadView: logs.add(0, new Log("sadness", new Date(), comment)); break;
+                    case R.id.loveView: name = "love"; break;
+                    case R.id.fearView: name = "fear"; break;
+                    case R.id.angerView: name = "anger"; break;
+                    case R.id.surpriseView: name = "surprise"; break;
+                    case R.id.joyView: name = "joy"; break;
+                    case R.id.sadView: name = "sadness"; break;
                 }
+                logs.add(0, new Log(name, new Date(), comment));
+                // count += 1
+                MainActivity.this.emotionCounts.put("love", MainActivity.this.emotionCounts.get("love") + 1);
 
                 adapter.notifyDataSetChanged();
 
@@ -277,6 +295,8 @@ public class MainActivity extends AppCompatActivity {
         /* Returns 0 on success, -1 on failure */
         for(int i = 0; i < this.logs.size(); i++){
             if (logs.get(i).getId().equals(id)){
+                String name = logs.get(i).getEmotion().getEmotionName();
+                this.emotionCounts.put(name, this.emotionCounts.get(name) - 1);
                 logs.remove(i);
                 return 0;
             }

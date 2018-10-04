@@ -68,12 +68,8 @@ public class Log implements Comparable<Log>{
         return this.comment;
     }
 
-    public Integer getEmojiReference(){
-        return this.emotion.getEmojiReference();
-    }
-
-    public String getEmotionName() {
-        return this.emotion.getEmotionName();
+    public Emotion getEmotion() {
+        return this.emotion;
     }
 
     public String getDateTimeAsString() {
