@@ -1,9 +1,3 @@
-/* Derived from user2450263's answer on StackOverflow [https://stackoverflow.com/a/21833388]
-        which ultimately came from Nithya Vasudevan's tutorial on
-        [http://theopentutorials.com/tutorials/android/listview/
-        android-custom-listview-with-image-and-text-using-arrayadapter/]
-* */
-
 package com.cmput301.assignment1;
 
 import android.app.Activity;

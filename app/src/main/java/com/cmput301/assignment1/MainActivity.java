@@ -1,7 +1,3 @@
-/* Adapter implementation modified from Joshua Charles Campbell's work at
-* [https://github.com/joshua2ua/lonelyTwitter]
-* */
-
 package com.cmput301.assignment1;
 
 import android.content.Intent;
@@ -62,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Remove the action bar; no use for now
-        // https://stackoverflow.com/a/27712413
         try{
             ActionBar ab = getSupportActionBar();
             ab.hide();
@@ -144,7 +139,6 @@ public class MainActivity extends AppCompatActivity {
                 Log log = findLogByID(id);
 
                 // Extra is HashMap despite compiler's complaints
-                // https://stackoverflow.com/a/262416
                 HashMap<String, Integer> dt = (HashMap<String, Integer>) extras.getSerializable("datetimes");
 
                 if (log == null) {
@@ -273,8 +267,6 @@ public class MainActivity extends AppCompatActivity {
     private void setLogsListener(ListView logsView) {
         // Set click listener, which transfers Log data from MainActivity to EditActivity
         //      via an Intent.
-        // See https://developer.android.com/reference/android/widget/AdapterView.OnItemClickListener
-        //      and user914425's answer on https://stackoverflow.com/a/7325248
         logsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -45,11 +45,9 @@ public class EditActivity extends AppCompatActivity {
         if (extras != null){
 
             // Extra is HashMap despite compiler's complaints
-            // https://stackoverflow.com/a/262416
             datetimes = (HashMap<String, Integer>) extras.getSerializable("datetimes");
 
             // DatePickerDialog's month attribute is 0-11 instead of 1-12
-            // Example: https://developer.android.com/reference/android/app/DatePickerDialog
             datetimes.put("month", datetimes.get("month") - 1);
 
             id = extras.getInt("id");
@@ -121,7 +119,6 @@ public class EditActivity extends AppCompatActivity {
     }
 
     protected void showTimePickerDialog(View v){
-        // https://stackoverflow.com/a/27514754
         TimePickerFragment timeFrag = new TimePickerFragment();
         timeFrag.setDefaults(this, this.datetimes.get("hour"), this.datetimes.get("minute"));
         timeFrag.show(getSupportFragmentManager(), "timePicker");

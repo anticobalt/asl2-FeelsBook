@@ -74,7 +74,6 @@ public class Log implements Comparable<Log>{
 
     public String getDateTimeAsString() {
         /* Returns datetime formatted in ISO 8601
-        Modified from Joachim Sauer's answer on https://stackoverflow.com/a/3914498
         */
         @SuppressLint("SimpleDateFormat") SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         return date_format.format(this.datetime);

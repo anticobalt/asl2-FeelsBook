@@ -1,7 +1,3 @@
-/* Written with reference to official Android guides at
-*       [https://developer.android.com/guide/topics/ui/controls/pickers]
-* */
-
 package com.cmput301.assignment1.fragment;
 
 import android.app.Dialog;
