@@ -12,6 +12,7 @@ The following online sources were used in the creation of this app:
     - Casting extras: [MetroidFan2002 @ StackOverflow](https://stackoverflow.com/a/262416), 2008/11/04
     - Creating Log Listener: [Android Documentation](https://developer.android.com/reference/android/widget/AdapterView.OnItemClickListener)
     - Passing Intents: [user914425 @ StackOverflow](https://stackoverflow.com/a/7325248), 2011/09/06
+    - Loading/save to file: Shaiful Chowdhury, CMPUT301 Lab Session, 2018/09/27
 
 - EditActivity:
     - DateTimePicker attribute specifics: [Android documentation](https://developer.android.com/reference/android/app/DatePickerDialog)
@@ -26,3 +27,5 @@ The following online sources were used in the creation of this app:
 
 - Time and Date PickerFragments:
     - How-To: [Official Android guides](https://developer.android.com/guide/topics/ui/controls/pickers)
+    
+Emoji icons are [Twitter's](https://github.com/twitter/twemoji), and licensed under MIT and CC-BY 4.0.
