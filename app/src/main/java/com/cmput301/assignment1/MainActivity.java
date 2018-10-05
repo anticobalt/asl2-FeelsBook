@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -298,6 +299,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v){
 
                 String success_message = "Log added!";
+                Calendar c = new GregorianCalendar();
 
                 // fetch comment from textbox
                 TextInputEditText textbox = findViewById(R.id.textboxView);
@@ -306,19 +308,11 @@ public class MainActivity extends AppCompatActivity {
                 // clear it
                 textbox.setText("");
 
-                // For each emoji, manually determine associated Emotion
-                //      then create Log instance with that Emotion. Logs are prepended.
-                // Doing it this way avoids having to create unique listener for every emoji
-                String name = "unidentified";  // should always be replaced
-                switch(emoji.getId()){
-                    case R.id.loveView: name = "love"; break;
-                    case R.id.fearView: name = "fear"; break;
-                    case R.id.angerView: name = "anger"; break;
-                    case R.id.surpriseView: name = "surprise"; break;
-                    case R.id.joyView: name = "joy"; break;
-                    case R.id.sadView: name = "sadness"; break;
-                }
-                logs.add(0, new Log(name, new Date(), comment));
+                // make log with emotion name, and default datetime seconds to 0
+                String name = emoji.getTag().toString();
+                c.setTime(new Date());
+                c.set(Calendar.SECOND, 0);
+                logs.add(0, new Log(name, c.getTime(), comment));
                 // count += 1
                 MainActivity.this.emotionCounts.put(name, MainActivity.this.emotionCounts.get(name) + 1);
                 updateEmotionCountViews();
