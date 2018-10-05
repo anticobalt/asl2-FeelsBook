@@ -1,3 +1,8 @@
+/**
+ * Launched by MainActivity to handle editing a Log.
+ * Log's data is transmitted via Intent, and transmitted back via Intent if necessary
+ */
+
 package com.cmput301.assignment1;
 
 import android.content.Intent;

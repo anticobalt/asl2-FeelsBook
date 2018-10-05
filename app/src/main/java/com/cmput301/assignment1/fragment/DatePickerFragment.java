@@ -1,3 +1,7 @@
+/**
+ * Allows for date editing.
+ */
+
 package com.cmput301.assignment1.fragment;
 
 import android.app.DatePickerDialog;

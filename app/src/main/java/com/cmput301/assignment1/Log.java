@@ -1,3 +1,7 @@
+/**
+ * Represents a record in time, with an Emotion, comment, and Date.
+ */
+
 package com.cmput301.assignment1;
 
 import android.annotation.SuppressLint;
